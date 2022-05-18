@@ -117,6 +117,7 @@ for ii = 1:dataX(end,1)
     x_dataY_cur = x_dataY(dataY(:,1)==ii);
     y_dataY_cur = y_dataY(dataY(:,1)==ii);
     I_dataY_cur = I_dataY(dataY(:,1)==ii);
+
     if length(x_dataX_cur)<length(x_dataY_cur)
         dim = 2;
     else 
@@ -148,6 +149,7 @@ loss = 0;
 dataX_paired = [];
 dataY_paired = [];
 for ii = 1:dataX(end,1)
+
     x_dataX_cur = x_dataX(dataX(:,1)==ii);
     y_dataX_cur = y_dataX(dataX(:,1)==ii);
     I_dataX_cur = I_dataX(dataX(:,1)==ii);
@@ -163,20 +165,25 @@ for ii = 1:dataX(end,1)
     end
     distance = sqrt((x_dataX_cur-x_dataY_cur.').^2+(y_dataX_cur-y_dataY_cur.').^2);
     I_distance = abs(I_dataX_cur-I_dataY_cur.')./repmat(I_dataX_cur,1,length(I_dataY_cur));
-    %distance(I_distance>1)=nan;
-    distance(distance>8) = nan;
+    %distance(I_distance>0.3)=nan;
+    distance(distance>10) = nan;
     
 
     [~,pair_indx] = nanmin(distance,[],dim);
     pair_indx(isnan(nanmin(distance,[],dim)))=nan;
-    [GC,GR] = groupcounts(pair_indx);
+    [GC,GR] = groupcounts(pair_indx(:));
     indx = GC>1;
-    distance(isnan(nanmin(distance,[],dim)),:)=nan;
+    %distance(isnan(nanmin(distance,[],dim)),:)=nan;
 
     for kk=1:length(GC) 
         if GC(kk)>1 & ~isnan(GR(kk))
-        minValue = min(distance(pair_indx==GR(kk),GR(kk)));
-        distance(distance(:,GR(kk))~=minValue,GR(kk))=nan;
+            if dim ==2
+                minValue = min(distance(pair_indx==GR(kk),GR(kk)));
+                distance(distance(:,GR(kk))~=minValue,GR(kk))=nan;
+            else 
+                minValue = min(distance(GR(kk),pair_indx==GR(kk)));
+                distance(GR(kk),distance(GR(kk),:)~=minValue)=nan;
+            end
         end
     end
         [~,pair_indx] = nanmin(distance,[],dim);
@@ -189,8 +196,9 @@ for ii = 1:dataX(end,1)
         dataX_cur(isnan(nanmin(distance,[],dim)),:)=[];
         dataX_paired = [dataX_paired;dataX_cur];
         dataY_paired = [dataY_paired;dataY_cur(pair_indx,:)];
-        if rem(ii,10)==1
+        if rem(ii,10)==5
         plot_pairs(dataX_cur,dataY_cur(pair_indx,:),dataX_cur_temp,dataY_cur,tform_y2x);
+        %plot_pairs(dataX_paired,dataY_paired,dataX_cur_temp,dataY_cur,tform_y2x);
         end
         
     else 
@@ -198,8 +206,9 @@ for ii = 1:dataX(end,1)
         dataY_cur(isnan(nanmin(distance,[],dim)),:)=[];
         dataX_paired = [dataX_paired;dataX_cur(pair_indx,:)];
         dataY_paired = [dataY_paired;dataY_cur];
-        if rem(ii,10)==1
-        plot_pairs(dataX_cur(pair_indx,:),dataY_cur,dataX_cur,dataY_cur_temp,tform_y2x);
+        if rem(ii,10)==5
+            %plot_pairs(dataX_paired,dataY_paired,dataX_cur,dataY_cur_temp,tform_y2x);
+            plot_pairs(dataX_cur(pair_indx,:),dataY_cur,dataX_cur,dataY_cur_temp,tform_y2x);
         end
         
     end
