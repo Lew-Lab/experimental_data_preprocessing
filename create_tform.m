@@ -1,6 +1,7 @@
 %caculate tform_x2y; means y_real_loc = tfrom(give x channel), or x_real_loc = tfrom_inverse(give y channel)
 
 fileFolder = [pwd '\example_data_for_tform\saved_beads_loc_for_tform\'];
+W = 1024; % the width of one channel [pixels]
 mainDirContents = dir(fileFolder);
 mask = endsWith({mainDirContents.name},'tform');
 mainDirContents(~mask)=[];
@@ -34,7 +35,7 @@ end
 end
 end
 end
-dataY(:,2) = 1024-dataY(:,2);
+dataY(:,2) = W-dataY(:,2);
 %% create tform
 %prepare data
 pixel_sz = 1;
@@ -42,7 +43,7 @@ photonThred = 1000; % in photon for y channel
 ratio_y2x = 1.145;
 
 center = [469,198]; %in pixel; directly get from the y channel image where the sample is located; have not flip the data
-center(1) = 1024-center(1);
+center(1) = W-center(1);
 ROI = 350;
 
 %filter data and process data
@@ -92,12 +93,14 @@ tformx2y = images.geotrans.PolynomialTransformation2D(movingPoints,fixedPoints,4
 %tformx2y = fitgeotrans(movingPoints,fixedPoints,'nonreflectivesimilarity');
 dataX_inver = transformPointsInverse(tformx2y,fixedPoints);
 
-figure(); 
+figure(); box on;
 scatter(dataX_paired(:,2),dataX_paired(:,3),10,'filled','r'); axis image
 hold on;
 scatter(dataX_inver(:,1),dataX_inver(:,2),10,'filled','g');axis image
 
-save(strcat(fileFolder,'tformx2y_y_center_',num2str(1024-center(1)),'_',num2str(center(2)),'_FoV_',num2str(ROI),'.mat'),'tformx2y');
+save(strcat(fileFolder,'tformx2y_y_center_',num2str(W-center(1)),'_',num2str(center(2)),'_FoV_',num2str(ROI),'.mat'),'tformx2y');
+xlabel('x (pixels)');
+ylabel('y (pixels)'); legend('x-channel beads','registed y-channel beads');
 %% function
 function loss = lossCaculate(tform_y2x,dataX,dataY)
 x_dataX = dataX(:,2);
