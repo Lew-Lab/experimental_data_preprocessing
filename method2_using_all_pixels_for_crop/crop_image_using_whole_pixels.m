@@ -4,7 +4,7 @@ fileFolder = [pwd '\exmaple_data_for_crop_image_tform_using_sample\'];
 SMLMName = ['_',num2str(dataN),'\_',num2str(dataN),'_MMStack_Default.ome.tif'];
 load([fileFolder,'processes data\tformx2y_y_center_410_200_FoV_250.mat']);
 tform = tformx2y;
-
+SMLM_save_Name_pre = [fileFolder, 'processes data\' ];
 
 %% define the cropping info
 ROI_centerY = [410,200];
@@ -101,7 +101,7 @@ for ii = 1:length(center_X)
 %count = count+1;
 range = round(-(FoV_each-1)/2):1:round((FoV_each-1)/2);
 
-SMLM_save_Nmae = ['processes data\data',num2str(dataN),'_centerY_y',num2str(ROI_centerY(1)),'_x_',num2str(ROI_centerY(2)),'_','FoV',num2str(FoV(1)),'_',num2str(FoV(2)),'_',num2str(ii),'th_FoV','.tif'];
+SMLM_save_Nmae = ['data',num2str(dataN),'_centerY_y',num2str(ROI_centerY(1)),'_x_',num2str(ROI_centerY(2)),'_','FoV',num2str(FoV(1)),'_',num2str(FoV(2)),'_',num2str(ii),'th_FoV','.tif'];
 
 ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(ii)];
 ROI_centerY_cur = ROI_centerY_cur+0.5;  % as in thunderstorm [N.5,N.5] is the center of a pixel, so I want to use center of a pixel for registration
@@ -158,9 +158,9 @@ SMLM_img = [uint16(SMLM_img_ROIx),uint16(SMLM_img_ROIy)];
 
 
     if i==1
-     imwrite(SMLM_img,[fileFolder,SMLM_save_Nmae])
+     imwrite(SMLM_img,[SMLM_save_Name_pre,SMLM_save_Nmae])
     else
-    imwrite(SMLM_img,[fileFolder,SMLM_save_Nmae],'WriteMode','append')
+    imwrite(SMLM_img,[SMLM_save_Name_pre,SMLM_save_Nmae],'WriteMode','append')
     end
 end
 end
