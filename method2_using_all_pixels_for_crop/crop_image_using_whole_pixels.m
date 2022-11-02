@@ -41,7 +41,7 @@ for ii = 1:length(center_X)
 %count = count+1;
 range = round(-(FoV_each-1)/2):1:round((FoV_each-1)/2);
 
-ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(jj)];
+ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(ii)];
 ROI_centerY_cur = ROI_centerY_cur+0.5;  % as in thunderstorm [N.5,N.5] is the center of a pixel, so I want to use center of a pixel for registration
 ROI_Y_all_cur = [ROI_centerY_cur(1)-range.',ROI_centerY_cur(2)+range.'];
 [ROI_Y_all_curX,ROI_Y_all_curY] = meshgrid(ROI_centerY_cur(1)-range.',ROI_centerY_cur(2)+range.');
@@ -56,8 +56,9 @@ ROI_Y_all_curY = reshape(ROI_Y_all_curY,[],1);
 %load(strcat('E:\Experimental_data\20220530 amyloid fibril\','\processed data8 data9_16\saved_beads_loc_for_tform_v3\tformx2y_y_center_',num2str(ROI_centerY_cur(1)),'_',num2str(ROI_centerY_cur(2)),'_FoV_150.mat'));
 
 ROI_centerX_cur = transformPointsInverse(tformx2y,[W,0]+[-(ROI_centerY_cur(1)),(ROI_centerY_cur(2))])+[W,0];
+ROI_X_all_cur = (transformPointsInverse(tformx2y,[W,0]+[-ROI_Y_all_curX,ROI_Y_all_curY])+[W,0]);
 ROI_centerY_cur = round(ROI_centerY_cur+0.5);  ROI_centerX_cur = round(ROI_centerX_cur+0.5);  % +0.5 is used for compensate the coodinate difference between thunderstorm and matlab
-
+ROI_X_all_cur = round(ROI_X_all_cur+0.5);
 
 
 
@@ -102,7 +103,7 @@ range = round(-(FoV_each-1)/2):1:round((FoV_each-1)/2);
 
 SMLM_save_Nmae = ['processes data\data',num2str(dataN),'_centerY_y',num2str(ROI_centerY(1)),'_x_',num2str(ROI_centerY(2)),'_','FoV',num2str(FoV(1)),'_',num2str(FoV(2)),'_',num2str(ii),'th_FoV','.tif'];
 
-ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(jj)];
+ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(ii)];
 ROI_centerY_cur = ROI_centerY_cur+0.5;  % as in thunderstorm [N.5,N.5] is the center of a pixel, so I want to use center of a pixel for registration
 ROI_Y_all_cur = [ROI_centerY_cur(1)-range.',ROI_centerY_cur(2)+range.'];
 [ROI_Y_all_curX,ROI_Y_all_curY] = meshgrid(ROI_centerY_cur(1)-range.',ROI_centerY_cur(2)+range.');
