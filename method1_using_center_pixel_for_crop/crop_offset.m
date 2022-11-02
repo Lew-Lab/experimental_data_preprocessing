@@ -9,6 +9,7 @@ Nimg = 1;
 FoV = [320,320]; 
 N_FoV = [4,4];
 FoV_each = 96;
+W = 1024;
 
 center_x = FoV(1)/N_FoV(1)/2*[-N_FoV(1)+1:2:N_FoV(1)-1];
 center_y = FoV(2)/N_FoV(2)/2*[-N_FoV(2)+1:2:N_FoV(2)-1];
@@ -22,8 +23,11 @@ count = count+1;
 range = round(-FoV_each/2+1):1:round(FoV_each/2);
 SMLM_save_Nmae = ['processes data\offset_centerY_y',num2str(ROI_centerY(1)),'_x_',num2str(ROI_centerY(2)),'_','FoV',num2str(FoV(1)),'_',num2str(FoV(2)),'_',num2str(count),'th_FoV','.mat'];
 
-ROI_centerY_cur = round(ROI_centerY+[center_x(ii),center_y(jj)]);
-ROI_centerX_cur = round(transformPointsInverse(tformx2y,[1024,0]+[-ROI_centerY_cur(1),ROI_centerY_cur(2)])+[1024,0]);
+ROI_centerY_cur = ROI_centerY+[center_x(ii),center_y(jj)];
+ROI_centerY_cur = ROI_centerY_cur+0.5;  % as in thunderstorm [N.5,N.5] is the center of a pixel, so I want to use center of a pixel for registration
+ROI_centerX_cur = transformPointsInverse(tformx2y,[W,0]+[-(ROI_centerY_cur(1)),(ROI_centerY_cur(2))])+[W,0];
+ROI_centerY_cur = round(ROI_centerY_cur+0.5);  ROI_centerX_cur = round(ROI_centerX_cur+0.5);  % +0.5 is used for compensate the coodinate difference between thunderstorm and matlab
+
 
 
 load([fileFolder,offsetName]);
